@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Client</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="logo">
+                    <i class="fas fa-envelope"></i>
+                    <span>Mail</span>
+                </div>
+            </div>
+            <div class="header-center">
+                <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" placeholder="Search mail" class="search-input" id="searchInput">
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="theme-toggle" id="themeToggle" title="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <div class="user-avatar">
+                    <img src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=32&h=32&dpr=1" alt="User">
+                </div>
+            </div>
+        </header>
+
+        <div class="main-container">
+            <!-- Sidebar -->
+            <nav class="sidebar" id="sidebar">
+                <button class="compose-btn" id="composeBtn">
+                    <i class="fas fa-plus"></i>
+                    Compose
+                </button>
+                
+                <div class="nav-section">
+                    <ul class="nav-list">
+                        <li class="nav-item active" data-folder="inbox">
+                            <i class="fas fa-inbox"></i>
+                            <span>Inbox</span>
+                            <span class="badge" id="inboxBadge">12</span>
+                        </li>
+                        <li class="nav-item" data-folder="starred">
+                            <i class="fas fa-star"></i>
+                            <span>Starred</span>
+                        </li>
+                        <li class="nav-item" data-folder="sent">
+                            <i class="fas fa-paper-plane"></i>
+                            <span>Sent</span>
+                        </li>
+                        <li class="nav-item" data-folder="drafts">
+                            <i class="fas fa-file-alt"></i>
+                            <span>Drafts</span>
+                            <span class="badge" id="draftsBadge">3</span>
+                        </li>
+                        <li class="nav-item" data-folder="important">
+                            <i class="fas fa-exclamation"></i>
+                            <span>Important</span>
+                        </li>
+                        <li class="nav-item" data-folder="spam">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Spam</span>
+                        </li>
+                        <li class="nav-item" data-folder="trash">
+                            <i class="fas fa-trash"></i>
+                            <span>Trash</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <h3>Labels</h3>
+                    <ul class="nav-list">
+                        <li class="nav-item" data-folder="personal">
+                            <div class="label-color personal"></div>
+                            <span>Personal</span>
+                        </li>
+                        <li class="nav-item" data-folder="work">
+                            <div class="label-color work"></div>
+                            <span>Work</span>
+                        </li>
+                        <li class="nav-item" data-folder="social">
+                            <div class="label-color social"></div>
+                            <span>Social</span>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <div class="email-toolbar">
+                    <div class="toolbar-left">
+                        <button class="toolbar-btn" id="selectAllBtn">
+                            <i class="far fa-square"></i>
+                        </button>
+                        <button class="toolbar-btn" id="refreshBtn" title="Refresh">
+                            <i class="fas fa-redo"></i>
+                        </button>
+                        <button class="toolbar-btn" id="archiveBtn" title="Archive">
+                            <i class="fas fa-archive"></i>
+                        </button>
+                        <button class="toolbar-btn" id="deleteBtn" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <div class="toolbar-right">
+                        <span class="email-count" id="emailCount">1-50 of 1,247</span>
+                        <button class="toolbar-btn">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="toolbar-btn">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="email-list" id="emailList">
+                    <!-- Emails will be populated by JavaScript -->
+                </div>
+            </main>
+        </div>
+
+        <!-- Email Compose Modal -->
+        <div class="modal-overlay" id="composeModal">
+            <div class="compose-modal">
+                <div class="modal-header">
+                    <h3>New Message</h3>
+                    <div class="modal-actions">
+                        <button class="modal-btn minimize" title="Minimize">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <button class="modal-btn close" id="closeComposeModal" title="Close">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="compose-field">
+                        <label>To:</label>
+                        <input type="email" id="composeTo" placeholder="Recipients">
+                    </div>
+                    <div class="compose-field">
+                        <label>Subject:</label>
+                        <input type="text" id="composeSubject" placeholder="Subject">
+                    </div>
+                    <div class="compose-field">
+                        <textarea id="composeMessage" placeholder="Type your message here..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-primary" id="sendEmailBtn">
+                        <i class="fas fa-paper-plane"></i>
+                        Send
+                    </button>
+                    <button class="btn-secondary" id="saveDraftBtn">
+                        Save Draft
+                    </button>
+                    <div class="compose-options">
+                        <button class="option-btn" title="Attach files">
+                            <i class="fas fa-paperclip"></i>
+                        </button>
+                        <button class="option-btn" title="Insert emoji">
+                            <i class="far fa-smile"></i>
+                        </button>
+                        <button class="option-btn" title="More options">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="/main.js"></script>
+</body>
+</html>
