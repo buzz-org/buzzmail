@@ -9,6 +9,54 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            /* Light theme colors */
+            --bg-gradient-start: #1e90ff;
+            --bg-gradient-middle: #00bfff;
+            --bg-gradient-end: #87ceeb;
+            --form-bg: rgba(255, 255, 255, 0.95);
+            --form-border: rgba(255, 255, 255, 0.3);
+            --text-primary: #333;
+            --text-secondary: #666;
+            --text-muted: #999;
+            --input-border: #e0e0e0;
+            --input-focus: #1e90ff;
+            --button-bg: linear-gradient(135deg, #1e90ff, #00bfff);
+            --button-shadow: rgba(30, 144, 255, 0.3);
+            --button-hover-shadow: rgba(30, 144, 255, 0.4);
+            --logo-bg: rgba(255, 255, 255, 0.95);
+            --logo-border: rgba(255, 255, 255, 0.3);
+            --logo-text: #1e90ff;
+            --signup-btn-bg: rgba(255, 255, 255, 0.1);
+            --signup-btn-border: rgba(255, 255, 255, 0.2);
+            --signup-btn-text: white;
+            --signup-btn-hover: rgba(255, 255, 255, 0.2);
+        }
+
+        [data-theme="dark"] {
+            /* Dark theme colors */
+            --bg-gradient-start: #0f1419;
+            --bg-gradient-middle: #1a1d29;
+            --bg-gradient-end: #232738;
+            --form-bg: rgba(42, 45, 63, 0.95);
+            --form-border: rgba(255, 255, 255, 0.1);
+            --text-primary: #f8f9fa;
+            --text-secondary: #adb5bd;
+            --text-muted: #6c757d;
+            --input-border: #343a46;
+            --input-focus: #4dabf7;
+            --button-bg: linear-gradient(135deg, #4dabf7, #845ef7);
+            --button-shadow: rgba(77, 171, 247, 0.3);
+            --button-hover-shadow: rgba(77, 171, 247, 0.4);
+            --logo-bg: rgba(42, 45, 63, 0.95);
+            --logo-border: rgba(255, 255, 255, 0.1);
+            --logo-text: #4dabf7;
+            --signup-btn-bg: rgba(255, 255, 255, 0.05);
+            --signup-btn-border: rgba(255, 255, 255, 0.1);
+            --signup-btn-text: #f8f9fa;
+            --signup-btn-hover: rgba(255, 255, 255, 0.1);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -17,7 +65,7 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #1e90ff 0%, #00bfff 50%, #87ceeb 100%);
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-middle) 50%, var(--bg-gradient-end) 100%);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -25,7 +73,8 @@
             justify-content: center;
             padding: 20px;
             position: relative;
-            overflow: hidden;
+            overflow-x: hidden;
+            transition: all 0.3s ease;
         }
 
         body::before {
@@ -42,17 +91,42 @@
             pointer-events: none;
         }
 
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--signup-btn-bg);
+            border: 1px solid var(--signup-btn-border);
+            color: var(--signup-btn-text);
+            padding: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+
+        .theme-toggle:hover {
+            background: var(--signup-btn-hover);
+            transform: scale(1.1);
+        }
+
         .login-container {
             width: 100%;
-            max-width: 400px;
+            max-width: 1200px;
             position: relative;
             z-index: 1;
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
         }
 
         .logo-container {
             text-align: center;
             margin-bottom: 60px;
             animation: fadeInDown 0.8s ease-out;
+            width: 100%;
         }
 
         .logo {
@@ -61,7 +135,7 @@
         }
 
         .logo-bubble {
-            background: rgba(255, 255, 255, 0.95);
+            background: var(--logo-bg);
             border-radius: 50px;
             padding: 20px 40px;
             display: inline-flex;
@@ -69,18 +143,19 @@
             gap: 10px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            border: 2px solid var(--logo-border);
+            transition: all 0.3s ease;
         }
 
         .logo-text {
             font-size: 36px;
             font-weight: 700;
-            color: #1e90ff;
+            color: var(--logo-text);
             letter-spacing: -1px;
         }
 
         .logo-me {
-            background: #1e90ff;
+            background: var(--logo-text);
             color: white;
             padding: 8px 16px;
             border-radius: 25px;
@@ -89,14 +164,117 @@
             margin-left: 5px;
         }
 
-        .login-form {
-            background: rgba(255, 255, 255, 0.95);
+        .signup-section {
+            flex: 1;
+            max-width: 400px;
+            animation: fadeInLeft 0.8s ease-out 0.2s both;
+        }
+
+        .signup-title {
+            color: var(--signup-btn-text);
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .signup-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .signup-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            background: var(--signup-btn-bg);
+            border: 1px solid var(--signup-btn-border);
+            border-radius: 12px;
+            color: var(--signup-btn-text);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+        }
+
+        .signup-btn:hover {
+            background: var(--signup-btn-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .signup-btn i {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .signup-btn.google i {
+            color: #4285f4;
+        }
+
+        .signup-btn.apple i {
+            color: #000;
+        }
+
+        .signup-btn.facebook i {
+            color: #1877f2;
+        }
+
+        .signup-btn.twitter i {
+            color: #1da1f2;
+        }
+
+        .signup-btn.linkedin i {
+            color: #0077b5;
+        }
+
+        .signup-btn.yahoo i {
+            color: #7b0099;
+        }
+
+        .signup-btn.microsoft i {
+            color: #00a1f1;
+        }
+
+        .signup-btn.github i {
+            color: #333;
+        }
+
+        [data-theme="dark"] .signup-btn.apple i {
+            color: #fff;
+        }
+
+        [data-theme="dark"] .signup-btn.github i {
+            color: #fff;
+        }
+
+        .signin-section {
+            flex: 1;
+            max-width: 400px;
+            animation: fadeInRight 0.8s ease-out 0.2s both;
+        }
+
+        .signin-form {
+            background: var(--form-bg);
             border-radius: 20px;
             padding: 40px 30px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            animation: fadeInUp 0.8s ease-out 0.2s both;
+            border: 1px solid var(--form-border);
+            transition: all 0.3s ease;
+        }
+
+        .signin-title {
+            color: var(--text-primary);
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            text-align: center;
         }
 
         .form-group {
@@ -107,7 +285,7 @@
             display: block;
             font-size: 12px;
             font-weight: 500;
-            color: #999;
+            color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 8px;
@@ -121,20 +299,20 @@
             width: 100%;
             padding: 15px 20px 15px 50px;
             border: none;
-            border-bottom: 2px solid #e0e0e0;
+            border-bottom: 2px solid var(--input-border);
             background: transparent;
             font-size: 16px;
-            color: #333;
+            color: var(--text-primary);
             outline: none;
             transition: all 0.3s ease;
         }
 
         .form-input:focus {
-            border-bottom-color: #1e90ff;
+            border-bottom-color: var(--input-focus);
         }
 
         .form-input::placeholder {
-            color: #999;
+            color: var(--text-muted);
         }
 
         .form-icon {
@@ -142,7 +320,7 @@
             left: 15px;
             top: 50%;
             transform: translateY(-50%);
-            color: #666;
+            color: var(--text-secondary);
             font-size: 16px;
         }
 
@@ -163,29 +341,29 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            color: #666;
+            color: var(--text-secondary);
         }
 
         .checkbox {
             width: 18px;
             height: 18px;
-            accent-color: #1e90ff;
+            accent-color: var(--input-focus);
         }
 
         .forgot-password {
-            color: #1e90ff;
+            color: var(--input-focus);
             text-decoration: none;
             font-weight: 500;
             transition: color 0.3s ease;
         }
 
         .forgot-password:hover {
-            color: #0066cc;
+            opacity: 0.8;
         }
 
         .login-btn {
             width: 100%;
-            background: linear-gradient(135deg, #1e90ff, #00bfff);
+            background: var(--button-bg);
             color: white;
             border: none;
             padding: 16px;
@@ -196,35 +374,43 @@
             letter-spacing: 1px;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(30, 144, 255, 0.3);
+            box-shadow: 0 4px 15px var(--button-shadow);
             margin-bottom: 30px;
         }
 
         .login-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(30, 144, 255, 0.4);
+            box-shadow: 0 8px 25px var(--button-hover-shadow);
         }
 
         .login-btn:active {
             transform: translateY(0);
         }
 
-        .signup-link {
+        .divider {
             text-align: center;
-            color: white;
+            margin: 30px 0;
+            position: relative;
+            color: var(--text-muted);
             font-size: 14px;
         }
 
-        .signup-link a {
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.5);
-            transition: all 0.3s ease;
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--input-border);
+            z-index: 1;
         }
 
-        .signup-link a:hover {
-            border-bottom-color: white;
+        .divider span {
+            background: var(--form-bg);
+            padding: 0 20px;
+            position: relative;
+            z-index: 2;
         }
 
         @keyframes fadeInDown {
@@ -238,20 +424,33 @@
             }
         }
 
-        @keyframes fadeInUp {
+        @keyframes fadeInLeft {
             from {
                 opacity: 0;
-                transform: translateY(30px);
+                transform: translateX(-30px);
             }
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: translateX(0);
             }
         }
 
-        @media (max-width: 480px) {
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @media (max-width: 768px) {
             .login-container {
-                max-width: 350px;
+                flex-direction: column;
+                max-width: 400px;
+                gap: 30px;
             }
 
             .logo-bubble {
@@ -267,8 +466,13 @@
                 padding: 6px 12px;
             }
 
-            .login-form {
+            .signin-form {
                 padding: 30px 25px;
+            }
+
+            .signup-title,
+            .signin-title {
+                font-size: 20px;
             }
         }
 
@@ -297,66 +501,148 @@
         }
     </style>
 </head>
-<body>
+<body data-theme="dark">
+    <button class="theme-toggle" id="themeToggle">
+        <i class="fas fa-sun"></i>
+    </button>
+
+    <div class="logo-container">
+        <div class="logo">
+            <div class="logo-bubble">
+                <span class="logo-text">Buzz</span>
+                <span class="logo-me">Me</span>
+            </div>
+        </div>
+    </div>
+
     <div class="login-container">
-        <div class="logo-container">
-            <div class="logo">
-                <div class="logo-bubble">
-                    <span class="logo-text">Buzz</span>
-                    <span class="logo-me">Me</span>
-                </div>
+        <div class="signup-section">
+            <h2 class="signup-title">Sign Up</h2>
+            <div class="signup-options">
+                <a href="#" class="signup-btn email">
+                    <i class="fas fa-envelope"></i>
+                    Sign up with Email
+                </a>
+                <a href="#" class="signup-btn phone">
+                    <i class="fas fa-phone"></i>
+                    Sign up with Phone Number
+                </a>
+                <a href="#" class="signup-btn google">
+                    <i class="fab fa-google"></i>
+                    Sign up with Google
+                </a>
+                <a href="#" class="signup-btn apple">
+                    <i class="fab fa-apple"></i>
+                    Sign up with Apple
+                </a>
+                <a href="#" class="signup-btn facebook">
+                    <i class="fab fa-facebook-f"></i>
+                    Sign up with Facebook
+                </a>
+                <a href="#" class="signup-btn twitter">
+                    <i class="fab fa-x-twitter"></i>
+                    Sign up with X (Twitter)
+                </a>
+                <a href="#" class="signup-btn linkedin">
+                    <i class="fab fa-linkedin-in"></i>
+                    Sign up with LinkedIn
+                </a>
+                <a href="#" class="signup-btn yahoo">
+                    <i class="fab fa-yahoo"></i>
+                    Sign up with Yahoo
+                </a>
+                <a href="#" class="signup-btn microsoft">
+                    <i class="fab fa-microsoft"></i>
+                    Sign up with Microsoft
+                </a>
+                <a href="#" class="signup-btn github">
+                    <i class="fab fa-github"></i>
+                    Sign up with GitHub
+                </a>
             </div>
         </div>
 
-        <form class="login-form" id="loginForm">
-            <div class="form-group">
-                <label class="form-label">Email</label>
-                <div class="form-input-container">
-                    <i class="fas fa-user form-icon"></i>
-                    <input 
-                        type="email" 
-                        class="form-input" 
-                        id="email"
-                        placeholder="bobby@gmail.com"
-                        required
-                    >
+        <div class="signin-section">
+            <form class="signin-form" id="loginForm">
+                <h2 class="signin-title">Sign In</h2>
+                
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <div class="form-input-container">
+                        <i class="fas fa-user form-icon"></i>
+                        <input 
+                            type="email" 
+                            class="form-input" 
+                            id="email"
+                            placeholder="bobby@gmail.com"
+                            required
+                        >
+                    </div>
                 </div>
-            </div>
 
-            <div class="form-group">
-                <label class="form-label">Password</label>
-                <div class="form-input-container">
-                    <i class="fas fa-key form-icon"></i>
-                    <input 
-                        type="password" 
-                        class="form-input password-input" 
-                        id="password"
-                        placeholder="••••••••"
-                        required
-                    >
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <div class="form-input-container">
+                        <i class="fas fa-key form-icon"></i>
+                        <input 
+                            type="password" 
+                            class="form-input password-input" 
+                            id="password"
+                            placeholder="••••••••"
+                            required
+                        >
+                    </div>
                 </div>
-            </div>
 
-            <div class="form-options">
-                <div class="checkbox-container">
-                    <input type="checkbox" id="keepLoggedIn" class="checkbox">
-                    <label for="keepLoggedIn">Keep me logged in</label>
+                <div class="form-options">
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="keepLoggedIn" class="checkbox">
+                        <label for="keepLoggedIn">Keep me logged in</label>
+                    </div>
+                    <a href="#" class="forgot-password">Forgot Password?</a>
                 </div>
-                <a href="#" class="forgot-password">Forgot Password?</a>
-            </div>
 
-            <button type="submit" class="login-btn" id="loginBtn">
-                <div class="loading"></div>
-                <span class="btn-text">Login</span>
-            </button>
-        </form>
-
-        <div class="signup-link">
-            Do not have Account? <a href="#" id="signupLink">Sign Up</a>
+                <button type="submit" class="login-btn" id="loginBtn">
+                    <div class="loading"></div>
+                    <span class="btn-text">Login</span>
+                </button>
+            </form>
         </div>
     </div>
 
     <script>
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        const themeIcon = themeToggle.querySelector('i');
+
+        // Set initial theme (dark by default)
+        let isDarkTheme = true;
+
+        themeToggle.addEventListener('click', () => {
+            isDarkTheme = !isDarkTheme;
+            
+            if (isDarkTheme) {
+                body.setAttribute('data-theme', 'dark');
+                themeIcon.className = 'fas fa-sun';
+            } else {
+                body.setAttribute('data-theme', 'light');
+                themeIcon.className = 'fas fa-moon';
+            }
+            
+            // Save theme preference
+            localStorage.setItem('buzzme-theme', isDarkTheme ? 'dark' : 'light');
+        });
+
+        // Load saved theme preference
+        const savedTheme = localStorage.getItem('buzzme-theme');
+        if (savedTheme && savedTheme === 'light') {
+            isDarkTheme = false;
+            body.setAttribute('data-theme', 'light');
+            themeIcon.className = 'fas fa-moon';
+        }
+
+        // Login form functionality
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -380,10 +666,13 @@
             }, 1500);
         });
 
-        // Handle signup link
-        document.getElementById('signupLink').addEventListener('click', function(e) {
-            e.preventDefault();
-            alert('Sign up functionality would be implemented here');
+        // Handle signup options
+        document.querySelectorAll('.signup-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const provider = this.textContent.trim();
+                alert(`${provider} functionality would be implemented here`);
+            });
         });
 
         // Handle forgot password
