@@ -119,12 +119,13 @@
             z-index: 1;
             display: flex;
             gap: 40px;
-            align-items: flex-start;
+            justify-content: center;
+            align-items: center;
         }
 
         .logo-container {
             text-align: center;
-            margin-bottom: 60px;
+            margin-bottom: 30px;
             animation: fadeInDown 0.8s ease-out;
             width: 100%;
         }
@@ -189,10 +190,10 @@
             align-items: center;
             gap: 12px;
             padding: 14px 20px;
-            background: var(--signup-btn-bg);
+            background: var(--form-bg);
             border: 1px solid var(--signup-btn-border);
             border-radius: 12px;
-            color: var(--signup-btn-text);
+            color: var(--text-primary);
             text-decoration: none;
             font-size: 14px;
             font-weight: 500;
@@ -262,7 +263,7 @@
         .signin-form {
             background: var(--form-bg);
             border-radius: 20px;
-            padding: 40px 30px;
+            padding: 15px 30px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(20px);
             border: 1px solid var(--form-border);
@@ -508,16 +509,16 @@
 
     <div class="login-container">
         <div class="signup-section">
-            <h2 class="signup-title">Sign Up</h2>
+            <!-- <h2 class="signup-title">Sign Up</h2> -->
             <div class="signup-options">
                 <a href="#" class="signup-btn email">
                     <i class="fas fa-envelope"></i>
                     Sign up with Email
                 </a>
-                <a href="#" class="signup-btn phone">
+                <!-- <a href="#" class="signup-btn phone">
                     <i class="fas fa-phone"></i>
-                    Sign up with Phone Number
-                </a>
+                    Sign up with Phone
+                </a> -->
                 <a href="#" class="signup-btn google">
                     <i class="fab fa-google"></i>
                     Sign up with Google
@@ -558,7 +559,7 @@
                 <div class="logo">
                     <div class="logo-bubble">
                         <span class="logo-text">Buzz</span>
-                        <span class="logo-me">Me</span>
+                        <span class="logo-me">Mail</span>
                     </div>
                 </div>
             </div>
