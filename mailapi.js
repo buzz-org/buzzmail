@@ -1,6 +1,6 @@
 async function signupoptions(data, db) {
     
-    const query = `SELECT s.SignUpId, s.SignUpPro, s.ClassCSS FROM signupoptions s;`;
+    const query = `SELECT s.SignUpId, s.SignUpPro, s.MailClass FROM signupoptions s;`;
     const params = [];
 
     const response = await db.execQuery(query, params);
