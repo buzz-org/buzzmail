@@ -1,4 +1,4 @@
-async function signupoptions(data, db) {
+async function mailsignup(data, db) {
     
     const query = `SELECT s.SignUpId, s.SignUpPro, s.MailClass FROM signupoptions s;`;
     const params = [];
@@ -11,5 +11,5 @@ async function signupoptions(data, db) {
 }
 
 export default {
-  signupoptions
+  mailsignup
 };

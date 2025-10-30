@@ -9,6 +9,66 @@ class EmailClient {
     
     // DOM elements
     this.elements = {};
+
+    this.initLogin();
+  }
+
+  initLogin() {
+    // this.connectWebSocket();
+    this.setupLoginHandlers();
+  }
+
+  setupLoginHandlers() {
+    const loginForm = document.getElementById('loginForm');
+    const loginBtn = document.getElementById('loginBtn');
+    const loginThemeToggle = document.getElementById('loginThemeToggle');
+
+    // Check for saved theme preference
+    // const savedTheme = localStorage.getItem('email-theme');
+    // if (savedTheme === 'dark') {
+    //   this.toggleThemeLogin();
+    // }
+
+    if (loginThemeToggle) {
+      loginThemeToggle.addEventListener('click', () => this.toggleThemeLogin());
+    }
+
+    if (loginForm) {
+      loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+      //   if (!email || !password) {
+      //     alert('Please fill in all fields');
+      //     return;
+      //   }
+
+        loginBtn.classList.add('loading');
+        loginBtn.disabled = true;
+
+        setTimeout(() => {
+          this.isLoggedIn = true;
+          document.getElementById('loginScreen').style.display = 'none';
+          document.getElementById('app').style.display = 'flex';
+
+          this.init();
+
+          document.body.dataset.page = 'home';
+          loginBtn.classList.remove('loading');
+          loginBtn.disabled = false;
+        }, 1500);
+      });
+    }
+
+    const forgotPassword = document.querySelector('.forgot-password');
+    if (forgotPassword) {
+      forgotPassword.addEventListener('click', function(e) {
+        e.preventDefault();
+        alert('Forgot password functionality would be implemented here');
+      });
+    }
   }
 
   init() {
@@ -45,7 +105,13 @@ class EmailClient {
       draftsBadge: document.getElementById('draftsBadge'),
       composeTo: document.getElementById('composeTo'),
       composeSubject: document.getElementById('composeSubject'),
-      composeMessage: document.getElementById('composeMessage')
+      composeMessage: document.getElementById('composeMessage'),
+      userAvatar: document.getElementById('userAvatar'),
+      userDropdown: document.getElementById('userDropdown'),
+      closeUserDropdown: document.getElementById('closeUserDropdown'),
+      logoutBtn: document.getElementById('logoutBtn'),
+      signOutBtn: document.getElementById('signOutBtn'),
+      userEmail: document.getElementById('userEmail')
     };
   }
 
@@ -83,6 +149,20 @@ class EmailClient {
 
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => this.handleKeyboardShortcuts(e));
+
+    // User dropdown
+    this.elements.userAvatar?.addEventListener('click', () => this.toggleUserDropdown());
+    this.elements.closeUserDropdown?.addEventListener('click', () => this.closeUserDropdown());
+    this.elements.logoutBtn?.addEventListener('click', () => this.logout());
+    // this.elements.signOutBtn?.addEventListener('click', () => this.logout());
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (this.elements.userDropdown?.classList.contains('active') &&
+          !e.target.closest('.user-menu-container')) {
+        this.closeUserDropdown();
+      }
+    });
   }
 
   generateSampleEmails() {
@@ -372,6 +452,16 @@ class EmailClient {
     localStorage.setItem('email-theme', this.isDarkTheme ? 'dark' : 'light');
   }
 
+  toggleThemeLogin() {
+        const body = document.body;
+        const currentTheme = body.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        body.setAttribute('data-theme', newTheme);
+        const loginThemeToggle = document.getElementById('loginThemeToggle');
+        loginThemeToggle.querySelector('i').className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        localStorage.setItem('email-theme', newTheme);
+  }
+
   handleSearch(searchTerm) {
     this.renderEmails();
   }
@@ -621,8 +711,28 @@ class EmailClient {
       }, 300);
     }, 3000);
   }
+
+  toggleUserDropdown() {
+    this.elements.userDropdown?.classList.add('active');
+  }
+
+  closeUserDropdown() {
+    this.elements.userDropdown?.classList.remove('active');
+  }
+
+  logout() {
+    this.closeUserDropdown();
+    this.isLoggedIn = false;
+
+    document.getElementById('app').style.display = 'none';
+    document.getElementById('loginScreen').style.display = 'flex';
+
+    document.getElementById('email').value = '';
+    document.getElementById('password').value = '';
+  }
 }
 
-// Initialize the email client
-const app = new EmailClient();
-app.init();
+// Initialize the chat application when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    window.mailApp = new EmailClient();
+});

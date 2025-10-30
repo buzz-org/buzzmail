@@ -1519,3 +1519,48 @@ WHERE rd.User = ?
         return { status: "failed", code: 0, message: 'Invalid credentials', login: 0 };
     }
 }
+
+async function chatsignup(data, db) {
+    
+    const query = `SELECT s.SignUpId, s.SignUpPro, s.ChatClass FROM signupoptions s;`;
+    const params = [];
+
+    const response = await db.execQuery(query, params);
+
+    const finalmsg =  { status: "success", code: 1, message: 'signupoptions successfull', signupoptions: response.result || [] };
+
+    return finalmsg;
+}
+
+export default {
+  terminate_session,
+  file_download,
+  chunk_append,
+  chunk_assemble,
+  reset_status,
+  get_message_files,
+  get_max_chunkindex,
+  chunk_download,
+  disconn,
+  chunk_upload,
+  get_sender_sessions,
+  get_sender_messages,
+  get_deliver_messages,
+  get_deliver_sessions,
+  get_receiver_sessions,
+  get_receiver_profile,
+  get_user_profile,
+  get_common_groups,
+  get_active_sessions,
+  get_my_sessions,
+  get_online_users,
+  get_group_users,
+  get_groups,
+  get_messages,
+  send_message,
+  create_group,
+  get_users,
+  get_chats,
+  login,
+  chatsignup
+};

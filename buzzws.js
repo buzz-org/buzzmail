@@ -31,7 +31,7 @@ app.get("/", (req, res) => {
 app.use(bodyParser.json());
 
 // ✅ Add API endpoint
-app.post("/api", async (req, res) => {
+app.post("/buzzapi", async (req, res) => {
   try {
     // pass the JSON body directly to processInput
     const result = await processInput(JSON.stringify(req.body));
