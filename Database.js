@@ -15,7 +15,7 @@ dotenv.config({ quiet: true });
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-export class Database {
+class Database {
     constructor() {
         this.pool = null;
         this.host = process.env.DB_HOST;
@@ -34,6 +34,7 @@ export class Database {
                 user: this.username,
                 password: this.password,
                 multipleStatements: true,
+                // rowsAsArray: true
                 // namedPlaceholders: true
             });
         } catch (error) {
@@ -41,7 +42,7 @@ export class Database {
         }
     }
 
-    getConnection() {
+    async getConnection() {
         return this.pool;
     }
 
@@ -76,6 +77,7 @@ export class Database {
 
             const [rows, fields] = await connection.query(query, params);
             // logerror(rows, 'execQuery');
+            // console.log(rows);
             // Handle multiple result sets
             // const result = Array.isArray(rows) ? [rows] : rows;
             // const result = Array.isArray(rows) ? rows : [rows];
@@ -134,18 +136,18 @@ export class Database {
         let connection;
         try {
             connection = await this.pool.getConnection();
-            const [results, fields] = await connection.execute(query, params);
+            const [rows, fields] = await connection.execute({ sql: query, rowsAsArray: true }, params);
 
             // Handle multiple result sets, fetch as arrays (numeric indices)
-            const resultSets = Array.isArray(results) ? [results] : results;
+            // const resultSets = Array.isArray(results) ? [results] : results;
 
             // Get warnings
             const [warnings] = await connection.query('SHOW WARNINGS');
 
             const response = {
-                affected_rows: results.affectedRows || 0,
+                affected_rows: rows.affectedRows || 0,
                 affected_columns: fields ? fields.length : 0,
-                lastInsertId: results.insertId || 0,
+                lastInsertId: rows.insertId || 0,
                 warnings_count: warnings.length,
                 warnings_desc: warnings,
                 final_query: query
@@ -155,8 +157,8 @@ export class Database {
                 status: 'success',
                 code: 1,
                 message: 'Query executed successfully.',
-                document: response,
-                result: resultSets
+                // document: response,
+                result: rows
             };
         } catch (error) {
             const logmsg = {
@@ -305,3 +307,8 @@ function logerror(logmsg, cstmsg) {
 // ✅ add this instead
 // export default Database;
 // export { Database };
+
+const db = new Database();
+await db.connect(); // connect once at startup
+
+export default db;

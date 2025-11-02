@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eauth - Buzz Mail</title>
+    <link rel="stylesheet" href="bchat.css?v=1">
+    <!-- <script src="https://accounts.google.com/gsi/client" async defer></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+    <link rel="stylesheet" href="oauth.css?v=1">
+</head>
+<body class="dark-mode">
+    <div class="app-container">
+        <div class="modal" style="display: flex;">
+            <div class="modal-content signup-modal-content" style="max-width: 600px;">
+                <div class="theme-toggle-container" style="position: absolute; top: 1rem; right: 1rem;">
+                    <button id="themeToggle" class="icon-btn" title="Toggle Theme">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="5"/>
+                            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <div id="signupForm" class="signup-form-container">
+                    <div id="oauthInfo" class="oauth-info hidden">
+                        <div class="oauth-info-item">
+                            <span class="oauth-info-label">Email:</span>
+                            <span class="oauth-info-value" id="displayEmail"></span>
+                        </div>
+                        <div class="oauth-info-item">
+                            <span class="oauth-info-label">Name:</span>
+                            <span class="oauth-info-value" id="displayName"></span>
+                        </div>
+                    </div>
+
+                    <form id="registrationForm">
+                        <div class="form-row">
+                            <div class="profile-picture-container">
+                                <div class="profile-picture-preview" id="profilePicturePreview">
+                                    <span id="profilePlaceholder">👤</span>
+                                </div>
+                                <input type="file" id="profilePictureInput" accept="image/*" style="display: none;">
+                                <!-- <button type="button" class="upload-btn" id="uploadBtn">Choose Profile Picture</button> -->
+                            </div>
+
+                            <div class="form-fields">
+                                <div class="form-group" id="emailGroup">
+                                    <label for="emailInput">Email Address</label>
+                                    <input type="email" id="emailInput" placeholder="Enter your email address" required>
+                                </div>
+
+                                <!-- <div class="otp-section">
+                                    <button type="button" class="otp-btn" id="sendOtpBtn">Send OTP</button>
+                                    <div class="form-group hidden" id="otpGroup" style="margin: 0;">
+                                        <input type="text" id="otpInput" placeholder="Enter OTP" maxlength="6">
+                                    </div>
+                                </div> -->
+                                <div class="form-group" id="nameGroup">
+                                    <label for="nameInput">Full Name</label>
+                                    <input type="text" id="nameInput" placeholder="Enter your full name" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- <div class="field-row">
+                            <div class="form-group" id="nameGroup">
+                                <label for="nameInput">Full Name</label>
+                                <input type="text" id="nameInput" placeholder="Enter your full name" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="usernameInput">Username</label>
+                                <input type="text" id="usernameInput" placeholder="Enter username" required readonly>
+                            </div>
+                        </div>
+
+                        <div class="field-row">
+                            <div class="form-group">
+                                <label for="passwordInput">Create Password</label>
+                                <div class="password-input-wrapper">
+                                    <input type="password" id="passwordInput" placeholder="Create a strong password" required>
+                                    <button type="button" class="password-toggle-btn" id="passwordToggleBtn">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="eye-icon">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                            <circle cx="12" cy="12" r="3"></circle>
+                                        </svg>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="eye-off-icon" style="display: none;">
+                                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                            <line x1="1" y1="1" x2="23" y2="23"></line>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="confirmPasswordInput">Confirm Password</label>
+                                <div class="password-input-wrapper">
+                                    <input type="password" id="confirmPasswordInput" placeholder="Re-enter your password" required>
+                                    <button type="button" class="password-toggle-btn" id="confirmPasswordToggleBtn">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="eye-icon">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                            <circle cx="12" cy="12" r="3"></circle>
+                                        </svg>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="eye-off-icon" style="display: none;">
+                                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                            <line x1="1" y1="1" x2="23" y2="23"></line>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div> -->
+
+                        <div id="errorMessage" class="error-message"></div>
+
+                        <div class="btn-group">
+                            <!-- <button type="button" class="btn btn-secondary" id="closeBtn">Close</button> -->
+                            <button type="submit" class="btn btn-primary" id="signUpBtn">Done</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="oauth.js?v=1"></script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Sync with Process Timing</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen">
+    <div class="w-full max-w-2xl p-6 bg-white rounded-lg shadow-md">
+        <h1 class="text-2xl font-bold mb-4 text-center">Email Sync Progress</h1>
+        <!-- Progress Bar Container (for batch_getmsg) -->
+        <div class="w-full bg-gray-200 rounded-full h-6 mb-4">
+            <div id="progress-bar" class="bg-blue-600 h-6 rounded-full transition-all duration-500" style="width: 0%"></div>
+        </div>
+        <!-- Progress Percentage -->
+        <p id="progress-text" class="text-center text-lg font-semibold">0%</p>
+        <!-- Console Output -->
+        <div id="console-output" class="mt-4 p-4 bg-gray-800 text-white rounded-lg max-h-96 overflow-y-auto"></div>
+    </div>
+
+    <script src="wsnode.js?v=1"></script>
+</body>
+</html>

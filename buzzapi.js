@@ -8,11 +8,12 @@ import fs from 'fs';
 import path from 'path';
 import express from 'express';
 import bodyParser from 'body-parser';
-import { Database } from './Database.js';
+import db from './Database.js';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import mailapi from './mailapi.js';
 import chatapi from './chatapi.js';
+import signup from './signup.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -82,8 +83,8 @@ async function processInput(inputBuffer) {
         }
 
         const action = data.action || '';
-        const db = new Database();
-        await db.connect();
+        // const db = new Database();
+        // await db.connect();
 
         switch (action) {
             // case related to chat
@@ -184,13 +185,43 @@ async function processInput(inputBuffer) {
                 logmsg.terminate_session = await chatapi. terminate_session(data, db);
                 break;
             case 'chatsignup':
-                logmsg.signupoptions = await chatapi.chatsignup(data, db);
+                logmsg.chatsignup = await signup.chatsignup(data, db);
+                break;
+            case 'signuptoken':
+                logmsg.signuptoken = await signup.signuptoken(data, db);
+                break;
+            case 'exchangeauth':
+                logmsg.exchangeauth = await signup.exchangeauth(data, db);
                 break;
 
             // case related to mail
 
             case 'mailsignup':
-                logmsg.signupoptions = await mailapi.mailsignup(data, db);
+                logmsg.mailsignup = await mailapi.mailsignup(data);
+                break;
+
+            case 'mailserpro':
+                logmsg.mailserpro = await mailapi.mailserpro(data);
+                break;
+
+            case 'serprotoken':
+                logmsg.serprotoken = await mailapi.serprotoken(data);
+                break;
+
+            case 'exchangemail':
+                logmsg.exchangemail = await mailapi.exchangemail(data);
+                break;
+
+            case 'getemlids':
+                logmsg.getemlids = await mailapi.getemlids(data);
+                break;
+
+            case 'getmsgids':
+                logmsg.getmsgids = await mailapi.getmsgids(data);
+                break;
+
+            case 'batch_getmsg':
+                logmsg.batch_getmsg = await mailapi.batch_getmsg(data);
                 break;
 
             default:
@@ -198,7 +229,7 @@ async function processInput(inputBuffer) {
                 break;
         }
 
-        await db.closeConnection();
+        // await db.closeConnection();
 
         let output;
         if (chunkDown.length > 0) {
@@ -218,7 +249,7 @@ async function processInput(inputBuffer) {
 }
 
 // Export the processInput function
-export { processInput };
+export { processInput, logerror };
 
 function logerror(logmsg, cstmsg) {
     let errmsg = `[ ${new Date().toLocaleString('en-US', { timeZone: 'UTC' })} ] [ ${cstmsg} ]`;

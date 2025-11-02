@@ -164,7 +164,7 @@
                                 <i class="fas fa-user-circle"></i>
                                 <span>Manage Account</span>
                             </button>
-                            <button class="user-dropdown-btn">
+                            <button class="user-dropdown-btn" id="addAccountBtn">
                                 <i class="fa-solid fa-user-plus"></i>
                                 <span>Add Account</span>
                             </button>
@@ -328,8 +328,30 @@
                 </div>
             </div>
         </div>
+
+        <!-- Email Service Provider Modal -->
+        <div class="modal-overlay" id="emailProviderModal">
+            <div class="email-provider-modal">
+                <div class="modal-header">
+                    <h3>Add Email Account</h3>
+                    <div class="modal-actions">
+                        <button class="modal-btn close" id="closeProviderModal" title="Close">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="provider-list" id="providerList">
+                        <div class="loading-page">
+                            <i class="fas fa-spinner"></i>
+                            Loading providers...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <!-- <script type="module" src="main.js"></script> -->
-    <script src="main.js?ver=2"></script>
+    <script src="app.js?ver=2"></script>
 </body>
 </html>
