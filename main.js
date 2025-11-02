@@ -2,6 +2,10 @@
 // import { EmailClient } from './src/EmailClient.js';
 class EmailClient {
   constructor() {
+    this.ws = null;
+    this.isConnected = false;
+    this.reconnectAttempts = 0;
+    this.maxReconnectAttempts = 5;
     this.currentFolder = 'inbox';
     this.selectedEmails = new Set();
     this.emails = this.generateSampleEmails();
@@ -14,8 +18,96 @@ class EmailClient {
   }
 
   initLogin() {
-    // this.connectWebSocket();
+    this.connectWebSocket();
     this.setupLoginHandlers();
+  }
+
+  connectWebSocket() {
+    try {
+      // Add connection timeout
+      const connectionTimeout = setTimeout(() => {
+          if (this.ws && this.ws.readyState == WebSocket.CONNECTING) {
+              this.ws.close();
+              this.handleConnectionError();
+          }
+      }, 10000); // 10 second timeout
+      // this.ws = new WebSocket('wss://nodejsws-67yl.onrender.com');
+      this.ws = new WebSocket('ws://localhost:5173');
+      this.ws.onopen = () => {
+          clearTimeout(connectionTimeout);
+          this.handleConnect();
+      };
+      this.ws.onmessage = (event) => this.handleMessage(event);
+      this.ws.onclose = () => {
+          clearTimeout(connectionTimeout);
+          this.handleDisconnect();
+      };
+      this.ws.onerror = (error) => this.handleError(error);
+    } catch (error) {
+        console.error('WebSocket connection error:', error);
+        this.handleConnectionError();
+    }
+  }
+
+  sendJSON(data) {
+    if (this.ws && this.ws.readyState == WebSocket.OPEN) {
+      this.ws.send(JSON.stringify(data));
+      console.log('Sent:', data);
+    } else {
+      console.error('WebSocket not connected, readyState:', this.ws ? this.ws.readyState : 'null');
+      this.handleConnectionError();
+    }
+  }
+
+  generateRequestId() {
+    return 'batch_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+  }
+
+  handleError(error) {
+    console.error('WebSocket error:', error);
+    this.handleConnectionError();
+  }
+
+  handleConnectionError() {
+    this.attemptReconnect();
+  }
+
+  attemptReconnect() {
+    if (this.reconnectAttempts >= this.maxReconnectAttempts) {
+      console.log('Maximum reconnection attempts reached', 'error');
+      this.disconnectWebSocket();
+      return;
+    }
+
+    this.reconnectAttempts++;
+    const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1);
+    
+    console.log(`Reconnecting in ${delay / 1000} seconds... (${this.reconnectAttempts}/${this.maxReconnectAttempts})`, 'warning');
+    
+    setTimeout(() => {
+      if (!this.isConnected) {
+        this.connectWebSocket();
+      }
+    }, delay);
+  }
+
+  disconnectWebSocket() {
+    if (this.ws) {
+      this.ws.close();
+      this.ws = null;
+    }
+  }
+
+  handleConnect() {
+    console.log('Connected to WebSocket server');
+    this.isConnected = true;
+    this.reconnectAttempts = 0;
+  }
+
+  handleDisconnect() {
+    console.log('Disconnected from WebSocket server');
+    this.isConnected = false;
+    this.attemptReconnect();
   }
 
   setupLoginHandlers() {
