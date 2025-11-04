@@ -920,6 +920,7 @@ class EmailClient {
       if (e.data?.source === "react-devtools-content-script") return;
       if (e.data?.originalData.action != "exchangemail") return;
       console.log("Returned value from Page-2:", e.data);
+      const emailAddressId = e.data.phpOutput.exchangemail.exchangemail.addresid;
       window.removeEventListener("message", handler);
     };
     window.addEventListener("message", handler);
