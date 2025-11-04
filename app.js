@@ -915,7 +915,14 @@ class EmailClient {
     const top = (screen.height - height) / 2;
 
     const features = `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`;
-    window.open(`oauth.html?provider=${provider}`, `OAuth ${provider}`, features);
+    let win = window.open(`oauth.html?provider=${provider}`, `OAuth ${provider}`, features);
+    const handler = function(e) {
+      if (e.data?.source === "react-devtools-content-script") return;
+      if (e.data?.originalData.action != "exchangemail") return;
+      console.log("Returned value from Page-2:", e.data);
+      window.removeEventListener("message", handler);
+    };
+    window.addEventListener("message", handler);
   }
 }
 

@@ -18,7 +18,7 @@ async function chatsignup(data, db) {
 async function signuptoken(data, db) {
     const signupid = data.signupid || '';
     if (!signupid) return { status: "failed", code: 0, message: 'Signupid is required' };
-    const query = `SELECT s.ClientToken FROM signupoptions s WHERE s.SignUpId = ?;`;
+    const query = `SELECT s.EmailSerProId AS serproid, s.EmailSerProName AS serproname, s.ClientToken FROM signupoptions s WHERE s.SignUpId = ?;`;
     const params = [signupid];
     const response = await db.execQuery(query, params);
     const clientObj = JSON.parse(response?.result?.[0]?.ClientToken || '{}');
@@ -29,7 +29,7 @@ async function signuptoken(data, db) {
         const redirect = clientObj?.redirect_uris || [];
         finalmsg =  { status: "success", code: 1, message: 'Signuptoken successfull', clientid: clientId, tenantid: tenantId, redirect: redirect };
     } else {
-        finalmsg =  { status: "success", code: 1, message: 'Signuptoken successfull', clientToken: clientObj };
+        finalmsg =  { status: "success", code: 1, message: 'Signuptoken successfull', infotoken: response.result };
     }
     return finalmsg;
 }
@@ -42,14 +42,14 @@ async function exchangeauth(data, db) {
         const authCode = data.authCode || '';
         if (!authCode) return { status: "failed", code: 0, message: 'Authcode is required' };
     }
-    const clientdtl = await signuptoken(data, db);  let oauth;
+    const clires = await signuptoken(data, db);  let oauth;
 
     if ( signupid == 1 ) {
-        oauth = await email_token(clientdtl, data, db);
+        oauth = await email_token(clires.infotoken, data, db);
     } else if ( signupid == 2 ) {
-        oauth = await googl_token(clientdtl, data, db);
+        oauth = await googl_token(clires.infotoken, data, db);
     } else if ( signupid == 3 ) {
-        oauth = await micro_token(clientdtl, data, db);
+        oauth = await micro_token(clires.infotoken, data, db);
     }
 
     const finalmsg =  { status: "success", code: 1, message: 'Exchangeauth successfull', exchangeauth: oauth };
@@ -57,16 +57,24 @@ async function exchangeauth(data, db) {
     return finalmsg;
 }
 
-async function googl_token(clientdtl, data, db) {
-    const clientObj = clientdtl.clientToken;
+async function googl_token(infotoken, data, db) {
+    const clientdtl = infotoken?.[0].ClientToken || infotoken?.[0].ClientSecret;
+    const serproname = infotoken?.[0].serproname || '';
+    const clientObj = JSON.parse(clientdtl || '{}');
+
     const clientId = clientObj?.client_id || '';
     const clientSt = clientObj?.client_secret || '';
     const redirect = clientObj?.redirect_uris || [];
     const tokenuri = clientObj?.token_uri || '';
     const userinfo = clientObj?.userinfo_uri || '';
+    const oauthuri = clientObj?.auth_uri || '';
+
     const authCode = data.authCode || '';
     const signupid = data.signupid || '';
-
+    const serproid = data.serproid || '';
+    const usr_login = data.usr_login || '';
+    const action = data.action || '';
+    
     const postFields = {
         code: authCode,
         client_id: clientId,
@@ -105,12 +113,28 @@ async function googl_token(clientdtl, data, db) {
       if (match) filename = match[1];
     }
 
-    user.image = body.toString("base64"); user.filename = filename;
+    user.image = body.toString("base64"); user.filename = filename; let finalmsg;
 
-    const finalmsg = { EmailId: user.email, SignUpId: signupid, Oauth: authCode, Token: accessToken, Info: user, picture: user.image, filename: user.filename };
+    request.created = Math.floor(Date.now() / 1000);
+    request.generated = new Date(request.created * 1000).toLocaleString("en-CA", { timeZone: "Asia/Kolkata", hour12: false }).replace(",", "");
+    request.expires_in = 3600; // Set manually or from API
+    request.expires_at = request.created + request.expires_in;
+    request.validtill = new Date(request.expires_at * 1000).toLocaleString("en-CA", { timeZone: "Asia/Kolkata", hour12: false }).replace(",", "");
+    request.TOKEN_ENDPOINT = tokenuri;
+    request.AUTH_ENDPOINT = oauthuri;
+    // data.AUTH_URL = oauthurl;
+    request.redirect_uris = redirect;
+    request.serproid = serproid || signupid;
+    request.serproname = serproname;
+    request.addresname = user.email;
 
-    user.oauthotpid = await insert_oauth(finalmsg);
-
+    if (action == 'exchangeauth') {
+        finalmsg = { status: "success", code: 1, message: "O-Authorized successfully.", details: "O-Authorized", EmailId: user.email, SignUpId: signupid, Oauth: authCode, Token: request, Info: user, picture: user.image, filename: user.filename };
+        user.oauthotpid = await insert_oauth(finalmsg);
+    } else {
+        finalmsg = { status: "success", code: 1, message: "E-Authorized successfully.", token: request, addresname: user.email, details: "E-Authorized", serproid: serproid, usr_login: usr_login };
+        user.addresid  = await insert_token(finalmsg);
+    }
     return user;
 }
 
@@ -734,6 +758,7 @@ async function insert_token(logmsg) {
     const params = [logmsg.addresname, tokenBase64, logmsg.serproid, '1', '1', '1', '0', logmsg.usr_login, logmsg.usr_login, 
         '1', logmsg.addresname, logmsg.code, logmsgBase64, logmsg.usr_login ];
     const request = await db.execQuery(query, params);  const response = request.result;
+    return response[0].insertId;
 }
 
 async function GmailSend(clientObj, accessObj, logmsg, hdrlog, i) {

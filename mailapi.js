@@ -22,7 +22,7 @@ async function mailserpro(data) {
 async function serprotoken(data) {
   const serproid = data.serproid || '';
   if (!serproid) return { status: "failed", code: 0, message: 'Serproid is required' };
-  const query = `SELECT p.ClientSecret FROM emailserpromst p WHERE p.EmailSerProId = ?;`;
+  const query = `SELECT p.EmailSerProId AS serproid, p.EmailSerProName AS serproname, p.ClientSecret FROM emailserpromst p WHERE p.EmailSerProId = ?;`;
   const params = [serproid];
   const response = await db.execQuery(query, params);
   const clientObj = JSON.parse(response?.result?.[0]?.ClientSecret || '{}');
@@ -33,9 +33,9 @@ async function serprotoken(data) {
     const redirect = clientObj?.redirect_uris || [];
     const auth_uri = clientObj?.auth_uri || '';
     const cliscope = clientObj?.mail_scopes || '';
-    finalmsg =  { status: "success", code: 1, message: 'Serprotoken successfull', clientId: clientId, tenantid: tenantId, redirect: redirect, auth_uri: auth_uri, cliscope: cliscope };
+    finalmsg =  { status: "success", code: 1, message: 'Serprotoken successfull', clientId: clientId, tenantid: tenantId, redirect: redirect, auth_uri: auth_uri, cliscope: cliscope, infotoken: response.result };
   } else {
-    finalmsg =  { status: "success", code: 1, message: 'Serprotoken successfull', clientToken: clientObj };
+    finalmsg =  { status: "success", code: 1, message: 'Serprotoken successfull', infotoken: response.result };
   }
   return finalmsg;
 }
@@ -47,15 +47,15 @@ async function exchangemail(data) {
     const authCode = data.authCode || '';
     if (!authCode) return { status: "failed", code: 0, message: 'Authcode is required' };
   }
-  const clientdtl = await serprotoken(data);  let oauth;
+  const clires = await serprotoken(data);  let oauth;
   // if ( serproid == 5 ) {
-    // oauth = await email_token(clientdtl, data, db);
+    // oauth = await email_token(serprotoken.infotoken, data, db);
   // } else 
   if ( serproid == 1 ) {
-    oauth = await signup.googl_token(clientdtl, data, db);
+    oauth = await signup.googl_token(clires.infotoken, data, db);
   } 
   // else if ( serproid == 2 ) {
-  //   oauth = await micro_token(clientdtl, data, db);
+  //   oauth = await micro_token(serprotoken.infotoken, data, db);
   // }
   const finalmsg =  { status: "success", code: 1, message: 'Exchangemail successfull', exchangemail: oauth };
   return finalmsg;

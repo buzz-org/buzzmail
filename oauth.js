@@ -251,7 +251,7 @@ class OAuthManager {
             if (response.status === 'completed' && response.phpOutput?.serprotoken) {
                 this.handleSignupTokenResponse(response.phpOutput.serprotoken);
             } else if (response.status === 'completed' && response.phpOutput?.exchangemail) {
-                this.handleExchangeAuthResponse(response.phpOutput.exchangemail);
+                this.handleExchangeAuthResponse(response);
             }
         };
 
@@ -294,7 +294,8 @@ class OAuthManager {
     }
 
     handleExchangeAuthResponse(exchangeauth) {
-        
+        window.opener.postMessage(exchangeauth, "*");
+        this.handleClose();
     }
 
     initializePage() {
@@ -495,7 +496,7 @@ class OAuthManager {
     }
 
     handleClose() {
-        // window.close();
+        window.close();
     }
 
     handleThemeToggle() {
