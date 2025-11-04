@@ -350,6 +350,35 @@
                 </div>
             </div>
         </div>
+
+        <!-- Email Sync Modal -->
+        <div class="modal-overlay" id="emailSyncModal">
+            <div class="email-sync-modal">
+                <div class="modal-header">
+                    <h3>Syncing Emails</h3>
+                    <div class="modal-actions">
+                        <button class="modal-btn close" id="closeSyncModal" title="Close">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="sync-progress-container">
+                        <div class="sync-progress-bar-wrapper">
+                            <div class="sync-progress-bar" id="syncProgressBar"></div>
+                        </div>
+                        <div class="sync-progress-text" id="syncProgressText">0%</div>
+                    </div>
+                    <div class="sync-messages" id="syncMessages"></div>
+                    <div class="sync-actions">
+                        <button class="btn btn-primary" id="syncCompleteBtn" style="display: none;">
+                            <i class="fas fa-check"></i>
+                            Done
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <!-- <script type="module" src="main.js"></script> -->
     <script src="app.js?ver=2"></script>

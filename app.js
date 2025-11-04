@@ -112,6 +112,8 @@ class EmailClient {
 
       if (response.phpOutput && response.phpOutput.mailserpro) {
         this.displayEmailProviders(response.phpOutput.mailserpro.mailserpro);
+      } else if (response.phpOutput && response.phpOutput.getmsgids) {
+        this.handlegetmsgids(response.phpOutput.getmsgids);
       }
     } catch (error) {
       console.error('Error parsing message:', error);
@@ -221,7 +223,13 @@ class EmailClient {
       addAccountBtn: document.getElementById('addAccountBtn'),
       emailProviderModal: document.getElementById('emailProviderModal'),
       closeProviderModal: document.getElementById('closeProviderModal'),
-      providerList: document.getElementById('providerList')
+      providerList: document.getElementById('providerList'),
+      emailSyncModal: document.getElementById('emailSyncModal'),
+      closeSyncModal: document.getElementById('closeSyncModal'),
+      syncProgressBar: document.getElementById('syncProgressBar'),
+      syncProgressText: document.getElementById('syncProgressText'),
+      syncMessages: document.getElementById('syncMessages'),
+      syncCompleteBtn: document.getElementById('syncCompleteBtn')
     };
   }
 
@@ -272,6 +280,15 @@ class EmailClient {
     this.elements.emailProviderModal?.addEventListener('click', (e) => {
       if (e.target === this.elements.emailProviderModal) {
         this.closeEmailProviderModal();
+      }
+    });
+
+    // Email sync modal
+    this.elements.closeSyncModal?.addEventListener('click', () => this.closeEmailSyncModal());
+    this.elements.syncCompleteBtn?.addEventListener('click', () => this.closeEmailSyncModal());
+    this.elements.emailSyncModal?.addEventListener('click', (e) => {
+      if (e.target === this.elements.emailSyncModal) {
+        this.closeEmailSyncModal();
       }
     });
 
@@ -916,14 +933,85 @@ class EmailClient {
 
     const features = `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`;
     let win = window.open(`oauth.html?provider=${provider}`, `OAuth ${provider}`, features);
-    const handler = function(e) {
+    const handler = (e) => {
       if (e.data?.source === "react-devtools-content-script") return;
       if (e.data?.originalData.action != "exchangemail") return;
       console.log("Returned value from Page-2:", e.data);
       const emailAddressId = e.data.phpOutput.exchangemail.exchangemail.addresid;
       window.removeEventListener("message", handler);
+      this.openEmailSyncModal(emailAddressId);
     };
     window.addEventListener("message", handler);
+  }
+
+  openEmailSyncModal(emailAddressId) {
+    this.currentEmailAddressId = emailAddressId;
+    this.elements.emailSyncModal?.classList.add('active');
+    this.startEmailSync(emailAddressId);
+  }
+
+  closeEmailSyncModal() {
+    this.elements.emailSyncModal?.classList.remove('active');
+  }
+
+  startEmailSync(emailAddressId) {
+    this.elements.syncProgressBar.style.width = '0%';
+    this.elements.syncProgressText.textContent = '0%';
+    this.elements.syncMessages.innerHTML = '';
+
+    this.syncLog('Preparing to sync emails...');
+
+    const requestData = {
+      action: 'getmsgids',
+      usr_login: 'admin',
+      usr_emlid: emailAddressId,
+      requestId: this.generateRequestId()
+    };
+
+    this.sendJSON(requestData);
+
+    // setTimeout(() => {
+    //   this.syncLog('Fetching message IDs...', 'info');
+    //   this.elements.syncProgressBar.style.width = '25%';
+    //   this.elements.syncProgressText.textContent = '25%';
+
+    //   setTimeout(() => {
+    //     this.syncLog('Processing messages...', 'info');
+    //     this.elements.syncProgressBar.style.width = '50%';
+    //     this.elements.syncProgressText.textContent = '50%';
+
+    //     setTimeout(() => {
+    //       this.syncLog('Syncing with server...', 'info');
+    //       this.elements.syncProgressBar.style.width = '75%';
+    //       this.elements.syncProgressText.textContent = '75%';
+
+    //       setTimeout(() => {
+    //         this.elements.syncProgressBar.style.width = '100%';
+    //         this.elements.syncProgressText.textContent = '100%';
+    //         this.syncLog('Email sync completed successfully!', 'success');
+    //         this.elements.syncCompleteBtn.style.display = 'block';
+    //       }, 1000);
+    //     }, 1000);
+    //   }, 1000);
+    // }, 500);
+  }
+
+  handlegetmsgids() {
+
+  }
+  syncLog(message, type = 'info') {
+    const logElement = document.createElement('div');
+    logElement.className = `sync-log-entry sync-log-${type}`;
+    logElement.innerHTML = `
+      <span class="sync-log-icon">
+        ${type === 'success' ? '<i class="fas fa-check-circle"></i>' :
+          type === 'error' ? '<i class="fas fa-exclamation-circle"></i>' :
+          '<i class="fas fa-info-circle"></i>'}
+      </span>
+      <span class="sync-log-text">${message}</span>
+    `;
+    this.elements.syncMessages.appendChild(logElement);
+    this.elements.syncMessages.scrollTop = this.elements.syncMessages.scrollHeight;
   }
 }
 
